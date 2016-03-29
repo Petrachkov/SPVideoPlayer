@@ -9,9 +9,7 @@
 import Foundation
 import UIKit
 
-protocol MediaToolBarDelegate{
-	func playTapped(toolBar: MediaToolBar);
-}
+
 class MediaToolBar : UIView{
 	var backColor : UIColor? = UIColor(red: 126.0/255.0, green: 126.0/255, blue: 126.0/255, alpha: 1);
 	
@@ -22,6 +20,9 @@ class MediaToolBar : UIView{
 	
 	var delegate : MediaToolBarDelegate!;
 	var playing : Bool = false;
+	
+	var fromStartLabel : UILabel!;
+	var tilEndLabel : UILabel!;
 	
 	override init(frame: CGRect) {
 		playButton = UIButton(type: .Custom);
@@ -41,15 +42,26 @@ class MediaToolBar : UIView{
 		slider.maximumValue = 10;
 		slider.minimumValue = 0;
 		slider.tintColor = UIColor.whiteColor();
+		slider.continuous = true;
 		
+		fromStartLabel = UILabel();
+		tilEndLabel = UILabel();
 		
+		fromStartLabel.textColor = UIColor.whiteColor();
+		tilEndLabel.textColor = UIColor.whiteColor();
+		
+		fromStartLabel.font = UIFont.systemFontOfSize(14);
+		tilEndLabel.font = UIFont.systemFontOfSize(14);
 		super.init(frame: frame);
 		self.backgroundColor = self.backColor;
 		self.addSubview(playButton);
 		self.addSubview(slider);
 		self.addSubview(expandButton);
 		self.addSubview(menuButton);
+		self.addSubview(fromStartLabel);
+		self.addSubview(tilEndLabel);
 		playButton.addTarget(self, action: "playTapped:", forControlEvents: .TouchUpInside);
+		slider.addTarget(self, action: "didDragged:", forControlEvents: .TouchDragInside);
 	}
 	
 	func setupLayout(portrait : Bool)->Void{
@@ -62,9 +74,16 @@ class MediaToolBar : UIView{
 	}
 	
 	private func setupPortraitLayout() -> Void{
-		self.playButton.frame = CGRectMake(10, 10, 40, 40);
-		self.slider.frame = CGRectMake(60, 10, self.frame.width - 60 - 60, 40);
-		self.expandButton.frame = CGRectMake(self.slider.frame.maxX + 10, 10, 40, 40);
+		self.playButton.frame = CGRectMake(5, 10, 40, 40);
+		self.fromStartLabel.frame = CGRectMake(self.playButton.frame.maxX + 5, 10, 40, 40);
+		self.slider.frame = CGRectMake(self.fromStartLabel.frame.maxX + 5,
+		                               10,
+		                               self.frame.width - self.playButton.frame.width - self.fromStartLabel.frame.width - 120,
+		                               40);
+		self.tilEndLabel.frame = CGRectMake(self.slider.frame.maxX + 2, 10,
+		                                    50,
+		                                    40);
+		self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 10, 40, 40);
 	}
 	
 	private func setupLandscapeLayout() -> Void{
@@ -82,37 +101,8 @@ class MediaToolBar : UIView{
 		button.setImage(img, forState: .Normal);
 	}
 	
+	func didDragged(slider : UISlider) -> Void {
+		delegate.dragDidEnd(slider);
+	}
 	
-//	
-//	[self setMaximumTrackImage:[[UIImage imageNamed:@"VKScrubber_max"]
-//	resizableImageWithCapInsets:UIEdgeInsetsMake(0, 4, 0, 4)]
-//	forState:UIControlStateNormal];
-//	[self setMinimumTrackImage:[[UIImage imageNamed:@"VKScrubber_min"]
-//	resizableImageWithCapInsets:UIEdgeInsetsMake(0, 4, 0, 4)]
-//	forState:UIControlStateNormal];
-//	[self setThumbImage:[UIImage imageNamed:@"VKScrubber_thumb"]
-//	forState:UIControlStateNormal];
-//	
-//	[self addTarget:self action:@selector(scrubbingBegin) forControlEvents:UIControlEventTouchDown];
-//	[self addTarget:self action:@selector(scrubbingEnd) forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside|UIControlEventTouchCancel];
-//	[self addTarget:self action:@selector(scrubberValueChanged) forControlEvents:UIControlEventValueChanged];
-//	
-//	self.exclusiveTouch = YES;
-//}
-//
-//- (void)scrubbingBegin {
-//	DDLogVerbose(@"SCRUBBER: Begin %f", self.value);
-//	[self.delegate scrubbingBegin];
-//	}
-//	
-//	- (void)scrubbingEnd {
-//  DDLogVerbose(@"SCRUBBER: End %f", self.value);
-//  [self.delegate scrubbingEnd];
-//		}
-//		
-//		- (void)scrubberValueChanged {
-//			DDLogVerbose(@"SCRUBBER: Change %f", self.value);
-//}
-
-
 }
