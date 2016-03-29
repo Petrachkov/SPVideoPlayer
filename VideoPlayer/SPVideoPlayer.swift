@@ -18,7 +18,7 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 	var asset : AVAsset? = nil
 	var playerItem: AVPlayerItem? = nil
 	var toolbar : MediaToolBar!
-	
+	var observerInitialized : Bool = false;
 	
 	//MARK: - Constructors -
 	///
@@ -51,13 +51,6 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 		toolbar.delegate = self;
 		toolbar.setupLayout(true);
 		self.addSubview(toolbar);
-		
-		player?.addPeriodicTimeObserverForInterval(CMTimeMake(1,1), queue: nil, usingBlock: {time in
-			self.toolbar.fromStartLabel.text = self.stringFromTimeInterval((self.player?.currentTime().seconds)!) as String
-			self.toolbar.tilEndLabel.text = "-\(self.stringFromTimeInterval((self.player?.currentItem?.duration.seconds)! - (self.player?.currentTime().seconds)!) as String)"
-			self.toolbar.slider.maximumValue = Float((self.player?.currentItem?.duration.seconds)!);
-			self.toolbar.slider.setValue(Float(self.player!.currentTime().seconds) /*/ Float(self.toolbar.slider.frame.width)*/, animated: true);
-		});
 	}
 	
 	//MARK: - Functional members -
@@ -66,6 +59,15 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 	
 	func playTapped(toolBar: MediaToolBar) {
 		if(!toolBar.playing){
+			if(!self.observerInitialized){
+				player?.addPeriodicTimeObserverForInterval(CMTimeMake(1,1), queue: nil, usingBlock: {time in
+					self.toolbar.fromStartLabel.text = self.stringFromTimeInterval((self.player?.currentTime().seconds)!) as String
+					self.toolbar.tilEndLabel.text = "-\(self.stringFromTimeInterval((self.player?.currentItem?.duration.seconds)! - (self.player?.currentTime().seconds)!) as String)"
+					self.toolbar.slider.maximumValue = Float((self.player?.currentItem?.duration.seconds)!);
+					self.toolbar.slider.setValue(Float(self.player!.currentTime().seconds) /*/ Float(self.toolbar.slider.frame.width)*/, animated: true);
+				});
+				observerInitialized = true;
+			}
 			player!.play()
 		}
 		else{
