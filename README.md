@@ -1,5 +1,5 @@
 # SPVideoPlayer
-Sample demo how to use AVVidePlayer and add custom media tool bar. Project is in progress. 
+Sample demo how to use AVVideoPlayer and add custom media tool bar. Project is in progress. 
 
 Customer wanted custom tool bar for ieo player. Not the original one. So here we are.
 Images used here are roughly perfect, as well as controls layout. But this demo shows how to work with avplayer in swift.
