@@ -48,6 +48,8 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 		self.layer.addSublayer(self.playerLayer!)
 		
 		toolbar = MediaToolBar(frame: CGRectMake(0, playerLayer!.frame.maxY, frame.width, 60));
+		playerLayer?.setNeedsLayout();
+		toolbar.setNeedsLayout();
 		toolbar.delegate = self;
 		//toolbar.setupLayout(true);
 		self.addSubview(toolbar);
@@ -114,11 +116,9 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 			self.frame = UIScreen.mainScreen().applicationFrame;
 			
 			var height = self.frame.height;
-			if (height <= 60){
+			if (height <= 60) {
 				height = 260
 			}
-			
-			
 			toolbar.frame = CGRectMake(0, 0, self.frame.width, 60)
 			playerLayer!.frame = CGRectMake(0, toolbar.frame.maxY, frame.width, height - 60);
 		}
@@ -137,4 +137,6 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 		
 		super.layoutSubviews();
 	}
+	
+	
 }

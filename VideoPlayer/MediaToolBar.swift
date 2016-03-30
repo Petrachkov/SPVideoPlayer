@@ -23,6 +23,7 @@ class MediaToolBar : UIView{
 	
 	var fromStartLabel : UILabel!;
 	var tilEndLabel : UILabel!;
+	var recommndationsView : RecommendationsView!;
 	
 	override init(frame: CGRect) {
 		playButton = UIButton(type: .Custom);
@@ -52,6 +53,9 @@ class MediaToolBar : UIView{
 		
 		fromStartLabel.font = UIFont.systemFontOfSize(14);
 		tilEndLabel.font = UIFont.systemFontOfSize(14);
+		
+		recommndationsView = RecommendationsView(frame: CGRectMake(UIScreen.mainScreen().applicationFrame.maxY - 200, -1000, 200 , UIScreen.mainScreen().applicationFrame.maxX));
+		
 		super.init(frame: frame);
 		self.backgroundColor = self.backColor;
 		self.addSubview(playButton);
@@ -60,9 +64,11 @@ class MediaToolBar : UIView{
 		self.addSubview(menuButton);
 		self.addSubview(fromStartLabel);
 		self.addSubview(tilEndLabel);
+		self.addSubview(recommndationsView);
 		playButton.addTarget(self, action: "playTapped:", forControlEvents: .TouchUpInside);
 		slider.addTarget(self, action: "didDragged:", forControlEvents: .TouchDragInside);
 		expandButton.addTarget(self, action: "rotate:", forControlEvents: .TouchUpInside);
+		menuButton.addTarget(self, action: "menuTapped:", forControlEvents: .TouchUpInside);
 	}
 	
 	func setupLayout(portrait : Bool)->Void{
@@ -116,26 +122,40 @@ class MediaToolBar : UIView{
 			let value = UIInterfaceOrientation.LandscapeLeft.rawValue
 			UIDevice.currentDevice().setValue(value, forKey: "orientation")
 		}
+		//self.layoutSubviews()
+	}
+	
+	func menuTapped(button : UIButton){
+		if(self.recommndationsView.isShown){
+			self.recommndationsView.hideView();
+		}
+		else{
+			self.recommndationsView.showView();
+		}
 	}
 	
 	override func layoutSubviews() {
-//		if(UIDevice.currentDevice().orientation != .Portrait){
-//			//self.frame = CGRectMake(0,0,UIScreen.mainScreen().applicationFrame.height,UIScreen.mainScreen().applicationFrame.width);
-//		
-//		}
-//		else{
 			
-			self.playButton.frame = CGRectMake(5, 10, 40, 40);
-			self.fromStartLabel.frame = CGRectMake(self.playButton.frame.maxX + 5, 10, 40, 40);
-			self.slider.frame = CGRectMake(self.fromStartLabel.frame.maxX + 5,
+		self.playButton.frame = CGRectMake(5, 10, 40, 40);
+		self.fromStartLabel.frame = CGRectMake(self.playButton.frame.maxX + 5, 10, 40, 40);
+		self.slider.frame = CGRectMake(self.fromStartLabel.frame.maxX + 5,
 			                               10,
 			                               self.frame.width - self.playButton.frame.width - self.fromStartLabel.frame.width - 120,
 			                               40);
-			self.tilEndLabel.frame = CGRectMake(self.slider.frame.maxX + 2, 10,
+		self.tilEndLabel.frame = CGRectMake(self.slider.frame.maxX + 2, 10,
 			                                    50,
 			                                    40);
+		self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 10, 40, 40);
+		
+		if(UIDevice.currentDevice().orientation != .Portrait){
+			self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 80, 10, 40, 40);
+			self.menuButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 10, 40, 40);
+			self.addSubview(self.menuButton);
+			
+		}
+		else{
 			self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 10, 40, 40);
-//		}
+		}
 		
 		super.layoutSubviews();
 	}
