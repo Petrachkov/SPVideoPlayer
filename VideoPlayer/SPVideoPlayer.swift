@@ -49,8 +49,9 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 		
 		toolbar = MediaToolBar(frame: CGRectMake(0, playerLayer!.frame.maxY, frame.width, 60));
 		toolbar.delegate = self;
-		toolbar.setupLayout(true);
+		//toolbar.setupLayout(true);
 		self.addSubview(toolbar);
+		self.portraitFrame = self.frame;
 	}
 	
 	//MARK: - Functional members -
@@ -61,6 +62,9 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 		if(!toolBar.playing){
 			if(!self.observerInitialized){
 				player?.addPeriodicTimeObserverForInterval(CMTimeMake(1,1), queue: nil, usingBlock: {time in
+					if((self.player?.currentItem?.duration.seconds.isNaN) != nil){
+						return;
+					}
 					self.toolbar.fromStartLabel.text = self.stringFromTimeInterval((self.player?.currentTime().seconds)!) as String
 					self.toolbar.tilEndLabel.text = "-\(self.stringFromTimeInterval((self.player?.currentItem?.duration.seconds)! - (self.player?.currentTime().seconds)!) as String)"
 					self.toolbar.slider.maximumValue = Float((self.player?.currentItem?.duration.seconds)!);
@@ -85,6 +89,10 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 	}
 	
 	func stringFromTimeInterval(interval:NSTimeInterval) -> NSString {
+		if(interval.isNaN || interval.isInfinite){
+			return NSString(string: "");
+		}
+		
 		let ti = NSInteger(interval)
 		let seconds = ti % 60
 		let minutes = (ti / 60) % 60
@@ -96,5 +104,24 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 		else{
 			return NSString(format: "%0.2d:%0.2d",minutes,seconds)
 		}
+	}
+	
+	var portraitFrame : CGRect!
+	
+	override func layoutSubviews() {
+		if(UIDevice.currentDevice().orientation != .Portrait){
+			
+			self.frame = UIScreen.mainScreen().applicationFrame;
+			
+			var height = self.frame.height;
+			if (height <= 60){
+				height = 260
+			}
+			playerLayer!.frame = CGRectMake(0, 0, frame.width, height - 60);
+			
+			toolbar.frame = CGRectMake(0, playerLayer!.frame.maxY, self.frame.width, 60)
+		}
+		
+		super.layoutSubviews();
 	}
 }
