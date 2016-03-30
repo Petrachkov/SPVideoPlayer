@@ -117,9 +117,22 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 			if (height <= 60){
 				height = 260
 			}
-			playerLayer!.frame = CGRectMake(0, 0, frame.width, height - 60);
 			
-			toolbar.frame = CGRectMake(0, playerLayer!.frame.maxY, self.frame.width, 60)
+			
+			toolbar.frame = CGRectMake(0, 0, self.frame.width, 60)
+			playerLayer!.frame = CGRectMake(0, toolbar.frame.maxY, frame.width, height - 60);
+		}
+		else{
+			self.frame = self.portraitFrame;
+			
+			var height = self.frame.height;
+			if (height <= 60){
+				height = 260
+			}
+			playerLayer!.frame = CGRectMake(0, 0, frame.width, height - 60);
+			toolbar.frame = CGRectMake(0, playerLayer!.frame.maxY, frame.width, 60)
+			
+
 		}
 		
 		super.layoutSubviews();
