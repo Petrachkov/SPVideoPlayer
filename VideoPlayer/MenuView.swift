@@ -34,16 +34,20 @@ class MenuView: UITableView {
 	}
 	
 	func showView(){
-		UIView.animateWithDuration(0.5, animations: {
-			self.frame.origin.x = UIScreen.mainScreen().applicationFrame.maxX - self.bounds.width;
-		})
+		if(!isShown){
+			UIView.animateWithDuration(0.5, animations: {
+				self.frame.origin.x = UIScreen.mainScreen().applicationFrame.maxX - self.bounds.width;
+			})
+		}
 		isShown = true;
 	}
 	
 	func hideView(){
-		UIView.animateWithDuration(0.5, animations: {
-			self.frame.origin.x = UIScreen.mainScreen().applicationFrame.maxX + 10;
-		})
+		if(isShown){
+			UIView.animateWithDuration(0.5, animations: {
+				self.frame.origin.x = UIScreen.mainScreen().applicationFrame.maxX + 10;
+			})
+		}
 		isShown = false
 	}
 	

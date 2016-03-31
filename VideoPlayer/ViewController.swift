@@ -31,5 +31,10 @@ class ViewController: UIViewController {
 		self.playerView.layoutSubviews()
 		super.willRotateToInterfaceOrientation(toInterfaceOrientation, duration: duration);
 	}
+	
+	override func viewWillDisappear(animated: Bool) {
+		self.playerView.pause();
+		super.viewWillDisappear(animated);
+	}
 }
 

@@ -67,7 +67,7 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 	///
 	var toolBarDelegate : MediaToolBarDelegate!
 	
-	func playTapped(toolBar: MediaToolBar) {
+	internal func playTapped(toolBar: MediaToolBar) {
 		if(!toolBar.playing){
 			if(!self.observerInitialized){
 				player?.addPeriodicTimeObserverForInterval(CMTimeMake(1,1), queue: nil, usingBlock: {time in
@@ -90,7 +90,7 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 		}
 	}
 	
-	func dragDidEnd(slider: UISlider) {
+	internal func dragDidEnd(slider: UISlider) {
 		player?.pause();
 		let seconds : Int64 = Int64(slider.value);
 		let preferredTimeScale : Int32 = 1;
@@ -101,7 +101,7 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 		}
 	}
 	
-	func menuTapped() {
+	internal func menuTapped() {
 		menuView.switchState();
 	}
 	
@@ -127,6 +127,10 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 		else{
 			return NSString(format: "%0.2d:%0.2d",minutes,seconds)
 		}
+	}
+	
+	public func pause(){
+		self.player?.pause();
 	}
 
 	
@@ -158,6 +162,11 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 	}
 	
 	func playerTapped(recognizer : UIGestureRecognizer){
+		self.switchToolBarVisibility();
+		self.menuView.hideView();
+	}
+	
+	func switchToolBarVisibility(){
 		UIView.animateWithDuration(0.7, animations: {
 			if(self.toolbar.hidden){
 				self.toolbar.hidden = false;
