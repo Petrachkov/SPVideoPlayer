@@ -112,23 +112,28 @@ class MediaToolBar : UIView{
 		blur.frame = self.frame
 		self.playButton.frame = CGRectMake(5, 0, 40, 40);
 		self.fromStartLabel.frame = CGRectMake(self.playButton.frame.maxX + 5, 0, 40, 40);
-		self.slider.frame = CGRectMake(self.fromStartLabel.frame.maxX + 5,
-			                               0,
-			                               self.frame.width - self.playButton.frame.width - self.fromStartLabel.frame.width - 140,
-			                               40);
+		
 		self.tilEndLabel.frame = CGRectMake(self.slider.frame.maxX + 2, 0,
 			                                    50,
 			                                    40);
-		self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 0, 40, 40);
+		
 		
 		if(UIDevice.currentDevice().orientation != .Portrait){
 			self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 80, 0, 40, 40);
 			self.menuButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 0, 40, 40);
+			self.slider.frame = CGRectMake(self.fromStartLabel.frame.maxX + 5,
+			                               0,
+			                               self.frame.width - self.playButton.frame.width - self.fromStartLabel.frame.width - 140,
+			                               40);
 		}
 		else{
+			self.slider.frame = CGRectMake(self.fromStartLabel.frame.maxX + 5,
+			                               0,
+			                               self.frame.width - self.playButton.frame.width - self.fromStartLabel.frame.width - 120,
+			                               40);
 			self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 0, 40, 40);
 		}
-		
+		//self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 0, 40, 40);
 		super.layoutSubviews();
 	}
 	
