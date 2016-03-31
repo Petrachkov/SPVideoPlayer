@@ -62,19 +62,7 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 		tapRecognizer.delegate = self;
 		self.addGestureRecognizer(tapRecognizer);
 	}
-	func playerTapped(recognizer : UIGestureRecognizer){
-		UIView.animateWithDuration(0.7, animations: {
-			if(self.toolbar.hidden){
-				self.toolbar.hidden = false;
-			}
-			else{
-				self.toolbar.hidden = true;
-			}
-		})
-	}
-	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool {
-		return (touch.view is SPVideoPlayer);
-	}
+	
 	//MARK: - Functional members -
 	///
 	var toolBarDelegate : MediaToolBarDelegate!
@@ -85,9 +73,9 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 				player?.addPeriodicTimeObserverForInterval(CMTimeMake(1,1), queue: nil, usingBlock: {time in
 					
 					// HERE IS WHAT YOU NEED TO ADJUST FOR VIDEOS. TODO: FIGURE OUT COMMON WAY
-					if((self.player?.currentItem?.duration.seconds.isNaN) != nil){
-						return;
-					}
+//					if((self.player?.currentItem?.duration.seconds.isNaN) != nil){
+//						return;
+//					}
 					self.toolbar.fromStartLabel.text = self.stringFromTimeInterval((self.player?.currentTime().seconds)!) as String
 					self.toolbar.tilEndLabel.text = "-\(self.stringFromTimeInterval((self.player?.currentItem?.duration.seconds)! - (self.player?.currentTime().seconds)!) as String)"
 					self.toolbar.slider.maximumValue = Float((self.player?.currentItem?.duration.seconds)!);
@@ -108,7 +96,9 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 		let preferredTimeScale : Int32 = 1;
 		let seekTime : CMTime = CMTimeMake(seconds, preferredTimeScale);
 		player?.seekToTime(seekTime);
-		player?.play();
+		if(self.toolbar.playing){
+			player?.play();
+		}
 	}
 	
 	func menuTapped() {
@@ -140,7 +130,7 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 	}
 
 	
-	//MARK: - UI -
+	//MARK: - UI logic-
 	var portraitFrame : CGRect!
 	override func layoutSubviews() {
 		if(UIDevice.currentDevice().orientation != .Portrait){
@@ -165,5 +155,19 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 		}
 		
 		super.layoutSubviews();
+	}
+	
+	func playerTapped(recognizer : UIGestureRecognizer){
+		UIView.animateWithDuration(0.7, animations: {
+			if(self.toolbar.hidden){
+				self.toolbar.hidden = false;
+			}
+			else{
+				self.toolbar.hidden = true;
+			}
+		})
+	}
+	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool {
+		return (touch.view is SPVideoPlayer);
 	}
 }
