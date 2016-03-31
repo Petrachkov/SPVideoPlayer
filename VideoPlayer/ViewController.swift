@@ -21,18 +21,15 @@ class ViewController: UIViewController {
 		self.view.setNeedsLayout()
 	}
 
-
 	override func didReceiveMemoryWarning() {
 		super.didReceiveMemoryWarning()
 		// Dispose of any resources that can be recreated.
 	}
-
 	
-		override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
-			self.view.layoutSubviews()
-			self.playerView.layoutSubviews()
-			super.willRotateToInterfaceOrientation(toInterfaceOrientation, duration: duration);
-		}
-		
+	override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
+		self.view.layoutSubviews()
+		self.playerView.layoutSubviews()
+		super.willRotateToInterfaceOrientation(toInterfaceOrientation, duration: duration);
+	}
 }
 

@@ -10,7 +10,7 @@ import UIKit
 import AVKit
 import MediaPlayer
 
-class SPVideoPlayer : UIView, MediaToolBarDelegate {
+class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate {
 	//MARK: - UI Members -
 	/// ui members
 	var player : AVPlayer? = nil
@@ -56,10 +56,25 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 		self.portraitFrame = self.frame;
 		
 		self.menuView = MenuView();
-		//self.menuView.hidden = true;
 		self.addSubview(menuView);
+		
+		var tapRecognizer = UITapGestureRecognizer(target: self, action: Selector("playerTapped:"));
+		tapRecognizer.delegate = self;
+		self.addGestureRecognizer(tapRecognizer);
 	}
-	
+	func playerTapped(recognizer : UIGestureRecognizer){
+		UIView.animateWithDuration(0.7, animations: {
+			if(self.toolbar.hidden){
+				self.toolbar.hidden = false;
+			}
+			else{
+				self.toolbar.hidden = true;
+			}
+		})
+	}
+	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool {
+		return (touch.view is SPVideoPlayer);
+	}
 	//MARK: - Functional members -
 	///
 	var toolBarDelegate : MediaToolBarDelegate!
@@ -123,16 +138,12 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 			return NSString(format: "%0.2d:%0.2d",minutes,seconds)
 		}
 	}
-	
-	
-	
-	
+
 	
 	//MARK: - UI -
 	var portraitFrame : CGRect!
 	override func layoutSubviews() {
 		if(UIDevice.currentDevice().orientation != .Portrait){
-			
 			self.frame = UIScreen.mainScreen().applicationFrame;
 			
 			var height = self.frame.height;
@@ -151,8 +162,6 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 			}
 			playerLayer!.frame = CGRectMake(0, 0, frame.width, height - 40);
 			toolbar.frame = CGRectMake(0, playerLayer!.frame.maxY - 40, frame.width, 40)
-			
-
 		}
 		
 		super.layoutSubviews();
