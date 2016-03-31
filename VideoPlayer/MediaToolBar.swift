@@ -11,7 +11,7 @@ import UIKit
 
 
 class MediaToolBar : UIView{
-	var backColor : UIColor? = UIColor(red: 126.0/255.0, green: 126.0/255, blue: 126.0/255, alpha: 1);
+	var backColor : UIColor? = UIColor(red: 126.0/255.0, green: 126.0/255, blue: 126.0/255, alpha: 0.8);
 	
 	var playButton : UIButton!;
 	var expandButton : UIButton!;
@@ -23,15 +23,15 @@ class MediaToolBar : UIView{
 	
 	var fromStartLabel : UILabel!;
 	var tilEndLabel : UILabel!;
-	var recommndationsView : RecommendationsView!;
 	
+	var blur : UIVisualEffectView!
 	override init(frame: CGRect) {
 		playButton = UIButton(type: .Custom);
 		playButton.setImage(UIImage(named: "play"), forState: .Normal);
 		
 		
 		expandButton = UIButton(type: .Custom);
-		expandButton.setImage(UIImage(named:"expand"), forState: .Normal);
+		expandButton.setImage(UIImage(named:"resize"), forState: .Normal);
 		
 		menuButton = UIButton(type: .Custom);
 		menuButton.setImage(UIImage(named: "menu"), forState: .Normal);
@@ -54,9 +54,13 @@ class MediaToolBar : UIView{
 		fromStartLabel.font = UIFont.systemFontOfSize(14);
 		tilEndLabel.font = UIFont.systemFontOfSize(14);
 		
-		recommndationsView = RecommendationsView(frame: CGRectMake(UIScreen.mainScreen().applicationFrame.maxY - 200, -1000, 200 , UIScreen.mainScreen().applicationFrame.maxX));
-		
 		super.init(frame: frame);
+		
+		let blureffect:UIBlurEffect = UIBlurEffect(style: UIBlurEffectStyle.Light)
+		blur = UIVisualEffectView (effect: blureffect)
+		blur.frame = frame
+		addSubview(blur)
+		
 		self.backgroundColor = self.backColor;
 		self.addSubview(playButton);
 		self.addSubview(slider);
@@ -64,38 +68,13 @@ class MediaToolBar : UIView{
 		self.addSubview(menuButton);
 		self.addSubview(fromStartLabel);
 		self.addSubview(tilEndLabel);
-		self.addSubview(recommndationsView);
-		playButton.addTarget(self, action: "playTapped:", forControlEvents: .TouchUpInside);
-		slider.addTarget(self, action: "didDragged:", forControlEvents: .TouchDragInside);
-		expandButton.addTarget(self, action: "rotate:", forControlEvents: .TouchUpInside);
-		menuButton.addTarget(self, action: "menuTapped:", forControlEvents: .TouchUpInside);
+		self.addSubview(self.menuButton);
+		playButton.addTarget(self, action: #selector(MediaToolBar.playTapped(_:)), forControlEvents: .TouchUpInside);
+		slider.addTarget(self, action: #selector(MediaToolBar.didDragged(_:)), forControlEvents: .TouchDragInside);
+		expandButton.addTarget(self, action: #selector(MediaToolBar.rotate(_:)), forControlEvents: .TouchUpInside);
+		menuButton.addTarget(self, action: #selector(MediaToolBar.menuTapped(_:)), forControlEvents: .TouchUpInside);
 	}
-	
-	func setupLayout(portrait : Bool)->Void{
-		if (portrait){
-			setupPortraitLayout();
-		}
-		else{
-			setupLandscapeLayout();
-		}
-	}
-	
-	private func setupPortraitLayout() -> Void{
-		self.playButton.frame = CGRectMake(5, 10, 40, 40);
-		self.fromStartLabel.frame = CGRectMake(self.playButton.frame.maxX + 5, 10, 40, 40);
-		self.slider.frame = CGRectMake(self.fromStartLabel.frame.maxX + 5,
-		                               10,
-		                               self.frame.width - self.playButton.frame.width - self.fromStartLabel.frame.width - 120,
-		                               40);
-		self.tilEndLabel.frame = CGRectMake(self.slider.frame.maxX + 2, 10,
-		                                    50,
-		                                    40);
-		self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 10, 40, 40);
-	}
-	
-	private func setupLandscapeLayout() -> Void{
-		
-	}
+
 	
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
@@ -114,6 +93,7 @@ class MediaToolBar : UIView{
 	
 	func rotate(button : UIButton){
 		if(UIDevice.currentDevice().orientation != .Portrait){
+			self.delegate.willRotateToOrientation(UIInterfaceOrientation.Portrait);
 			let value = UIInterfaceOrientation.Portrait.rawValue
 			UIDevice.currentDevice().setValue(value, forKey: "orientation")
 
@@ -122,39 +102,31 @@ class MediaToolBar : UIView{
 			let value = UIInterfaceOrientation.LandscapeLeft.rawValue
 			UIDevice.currentDevice().setValue(value, forKey: "orientation")
 		}
-		//self.layoutSubviews()
 	}
 	
 	func menuTapped(button : UIButton){
-		if(self.recommndationsView.isShown){
-			self.recommndationsView.hideView();
-		}
-		else{
-			self.recommndationsView.showView();
-		}
+		self.delegate.menuTapped();
 	}
 	
 	override func layoutSubviews() {
-			
-		self.playButton.frame = CGRectMake(5, 10, 40, 40);
-		self.fromStartLabel.frame = CGRectMake(self.playButton.frame.maxX + 5, 10, 40, 40);
+		blur.frame = self.frame
+		self.playButton.frame = CGRectMake(5, 0, 40, 40);
+		self.fromStartLabel.frame = CGRectMake(self.playButton.frame.maxX + 5, 0, 40, 40);
 		self.slider.frame = CGRectMake(self.fromStartLabel.frame.maxX + 5,
-			                               10,
-			                               self.frame.width - self.playButton.frame.width - self.fromStartLabel.frame.width - 120,
+			                               0,
+			                               self.frame.width - self.playButton.frame.width - self.fromStartLabel.frame.width - 140,
 			                               40);
-		self.tilEndLabel.frame = CGRectMake(self.slider.frame.maxX + 2, 10,
+		self.tilEndLabel.frame = CGRectMake(self.slider.frame.maxX + 2, 0,
 			                                    50,
 			                                    40);
-		self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 10, 40, 40);
+		self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 0, 40, 40);
 		
 		if(UIDevice.currentDevice().orientation != .Portrait){
-			self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 80, 10, 40, 40);
-			self.menuButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 10, 40, 40);
-			self.addSubview(self.menuButton);
-			
+			self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 80, 0, 40, 40);
+			self.menuButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 0, 40, 40);
 		}
 		else{
-			self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 10, 40, 40);
+			self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 0, 40, 40);
 		}
 		
 		super.layoutSubviews();

@@ -19,12 +19,13 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 	var playerItem: AVPlayerItem? = nil
 	var toolbar : MediaToolBar!
 	var observerInitialized : Bool = false;
+	var menuView : MenuView!
 	
 	//MARK: - Constructors -
 	///
 	required override init(frame: CGRect) {
 		super.init(frame: frame);
-		self.backgroundColor = UIColor(red: 200.0/255, green: 200.0/255, blue: 200.0/255, alpha: 1);
+		self.backgroundColor = UIColor.clearColor()//UIColor(red: 200.0/255, green: 200.0/255, blue: 200.0/255, alpha: 1);
 	}
 	
 	required init?(coder aDecoder: NSCoder) {
@@ -40,20 +41,23 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 		
 		playerLayer = AVPlayerLayer(player: self.player)
 		var height = frame.height;
-		if (height <= 60){
-			height = 260
+		if (height <= 40){
+			height = 240
 		}
-		playerLayer!.frame = CGRectMake(0, 0, frame.width, height - 60);
+		playerLayer!.frame = CGRectMake(0, 0, frame.width, height);
 		player?.actionAtItemEnd = .None
 		self.layer.addSublayer(self.playerLayer!)
 		
-		toolbar = MediaToolBar(frame: CGRectMake(0, playerLayer!.frame.maxY, frame.width, 60));
+		toolbar = MediaToolBar(frame: CGRectMake(0, playerLayer!.frame.maxY - 40, frame.width, 40));
 		playerLayer?.setNeedsLayout();
 		toolbar.setNeedsLayout();
 		toolbar.delegate = self;
-		//toolbar.setupLayout(true);
 		self.addSubview(toolbar);
 		self.portraitFrame = self.frame;
+		
+		self.menuView = MenuView();
+		//self.menuView.hidden = true;
+		self.addSubview(menuView);
 	}
 	
 	//MARK: - Functional members -
@@ -64,13 +68,15 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 		if(!toolBar.playing){
 			if(!self.observerInitialized){
 				player?.addPeriodicTimeObserverForInterval(CMTimeMake(1,1), queue: nil, usingBlock: {time in
+					
+					// HERE IS WHAT YOU NEED TO ADJUST FOR VIDEOS. TODO: FIGURE OUT COMMON WAY
 					if((self.player?.currentItem?.duration.seconds.isNaN) != nil){
 						return;
 					}
 					self.toolbar.fromStartLabel.text = self.stringFromTimeInterval((self.player?.currentTime().seconds)!) as String
 					self.toolbar.tilEndLabel.text = "-\(self.stringFromTimeInterval((self.player?.currentItem?.duration.seconds)! - (self.player?.currentTime().seconds)!) as String)"
 					self.toolbar.slider.maximumValue = Float((self.player?.currentItem?.duration.seconds)!);
-					self.toolbar.slider.setValue(Float(self.player!.currentTime().seconds) /*/ Float(self.toolbar.slider.frame.width)*/, animated: true);
+					self.toolbar.slider.setValue(Float(self.player!.currentTime().seconds), animated: true);
 				});
 				observerInitialized = true;
 			}
@@ -88,6 +94,16 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 		let seekTime : CMTime = CMTimeMake(seconds, preferredTimeScale);
 		player?.seekToTime(seekTime);
 		player?.play();
+	}
+	
+	func menuTapped() {
+		menuView.switchState();
+	}
+	
+	func willRotateToOrientation(orientation : UIInterfaceOrientation){
+		if (orientation == UIInterfaceOrientation.Portrait){
+			menuView.hideView();
+		}
 	}
 	
 	func stringFromTimeInterval(interval:NSTimeInterval) -> NSString {
@@ -108,19 +124,23 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 		}
 	}
 	
-	var portraitFrame : CGRect!
 	
+	
+	
+	
+	//MARK: - UI -
+	var portraitFrame : CGRect!
 	override func layoutSubviews() {
 		if(UIDevice.currentDevice().orientation != .Portrait){
 			
 			self.frame = UIScreen.mainScreen().applicationFrame;
 			
 			var height = self.frame.height;
-			if (height <= 60) {
-				height = 260
+			if (height <= 40) {
+				height = 240
 			}
-			toolbar.frame = CGRectMake(0, 0, self.frame.width, 60)
-			playerLayer!.frame = CGRectMake(0, toolbar.frame.maxY, frame.width, height - 60);
+			toolbar.frame = CGRectMake(0, 0, self.frame.width, 40)
+			playerLayer!.frame = CGRectMake(0, toolbar.frame.maxY - 40, frame.width, height - 40);
 		}
 		else{
 			self.frame = self.portraitFrame;
@@ -129,14 +149,12 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate {
 			if (height <= 60){
 				height = 260
 			}
-			playerLayer!.frame = CGRectMake(0, 0, frame.width, height - 60);
-			toolbar.frame = CGRectMake(0, playerLayer!.frame.maxY, frame.width, 60)
+			playerLayer!.frame = CGRectMake(0, 0, frame.width, height - 40);
+			toolbar.frame = CGRectMake(0, playerLayer!.frame.maxY - 40, frame.width, 40)
 			
 
 		}
 		
 		super.layoutSubviews();
 	}
-	
-	
 }

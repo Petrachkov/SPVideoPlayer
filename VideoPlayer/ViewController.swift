@@ -14,9 +14,9 @@ class ViewController: UIViewController {
 	var playerView : SPVideoPlayer!;
 	override func viewDidLoad() {
 		super.viewDidLoad();
-		let videoURLWithPath = "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8"
+		let videoURLWithPath =  "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8"
 		let videoURL = NSURL(string: videoURLWithPath)
-		self.playerView = SPVideoPlayer(frame: CGRectMake(0, 20, UIScreen.mainScreen().applicationFrame.width, 260), url: videoURL!);
+		self.playerView = SPVideoPlayer(frame: CGRectMake(0, 20, UIScreen.mainScreen().applicationFrame.width, 240), url: videoURL!);
 		self.view.addSubview(playerView);
 		self.view.setNeedsLayout()
 	}
@@ -31,11 +31,17 @@ class ViewController: UIViewController {
 //		self.view.layoutIfNeeded()
 //	}
 	
-	
-	override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
+//	
+//	override func willRotateToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
+//		self.view.layoutSubviews()
+//		self.playerView.layoutSubviews()
+//		super.willRotateToInterfaceOrientation(toInterfaceOrientation, duration: duration);
+//	}
+//	
+	override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
 		self.view.layoutSubviews()
 		self.playerView.layoutSubviews()
-		super.willRotateToInterfaceOrientation(toInterfaceOrientation, duration: duration);
+		super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator);
 	}
 }
 

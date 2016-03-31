@@ -18,7 +18,7 @@
 		39E6A2ED1CAA17CC0052786C /* MediaToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E6A2EC1CAA17CC0052786C /* MediaToolBar.swift */; };
 		39E6A2F31CAA5F4C0052786C /* SPVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E6A2F21CAA5F4C0052786C /* SPVideoPlayer.swift */; };
 		39E6A2F51CAA60ED0052786C /* MediaToolBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E6A2F41CAA60ED0052786C /* MediaToolBarDelegate.swift */; };
-		39FB678A1CABD505008DEDDF /* RecommendationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39FB67891CABD505008DEDDF /* RecommendationsView.swift */; };
+		39FB678A1CABD505008DEDDF /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39FB67891CABD505008DEDDF /* MenuView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,7 +35,7 @@
 		39E6A2EC1CAA17CC0052786C /* MediaToolBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaToolBar.swift; sourceTree = "<group>"; };
 		39E6A2F21CAA5F4C0052786C /* SPVideoPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SPVideoPlayer.swift; sourceTree = "<group>"; };
 		39E6A2F41CAA60ED0052786C /* MediaToolBarDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaToolBarDelegate.swift; sourceTree = "<group>"; };
-		39FB67891CABD505008DEDDF /* RecommendationsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecommendationsView.swift; sourceTree = "<group>"; };
+		39FB67891CABD505008DEDDF /* MenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,7 +91,7 @@
 				39E6A2EC1CAA17CC0052786C /* MediaToolBar.swift */,
 				39E6A2F21CAA5F4C0052786C /* SPVideoPlayer.swift */,
 				39E6A2F41CAA60ED0052786C /* MediaToolBarDelegate.swift */,
-				39FB67891CABD505008DEDDF /* RecommendationsView.swift */,
+				39FB67891CABD505008DEDDF /* MenuView.swift */,
 			);
 			name = SPVideoPlayer;
 			sourceTree = "<group>";
@@ -172,7 +172,7 @@
 				39E6A2F51CAA60ED0052786C /* MediaToolBarDelegate.swift in Sources */,
 				39E6A2ED1CAA17CC0052786C /* MediaToolBar.swift in Sources */,
 				390909B71C9A774300EFB419 /* AppDelegate.swift in Sources */,
-				39FB678A1CABD505008DEDDF /* RecommendationsView.swift in Sources */,
+				39FB678A1CABD505008DEDDF /* MenuView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

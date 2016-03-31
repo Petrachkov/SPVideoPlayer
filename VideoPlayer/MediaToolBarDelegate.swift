@@ -12,4 +12,6 @@ import Foundation
 protocol MediaToolBarDelegate{
 	func playTapped(toolBar: MediaToolBar);
 	func dragDidEnd(slider: UISlider);
+	func menuTapped();
+	func willRotateToOrientation(orientation : UIInterfaceOrientation);
 }
