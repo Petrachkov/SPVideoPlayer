@@ -109,7 +109,7 @@ class MediaToolBar : UIView{
 	}
 	
 	override func layoutSubviews() {
-		blur.frame = self.frame
+		blur.frame = self.bounds
 		self.playButton.frame = CGRectMake(5, 0, 40, 40);
 		self.fromStartLabel.frame = CGRectMake(self.playButton.frame.maxX + 5, 0, 40, 40);
 		

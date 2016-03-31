@@ -84,6 +84,7 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 				observerInitialized = true;
 			}
 			player!.play()
+			self.hideToolBar(1.5);
 		}
 		else{
 			player!.pause();
@@ -129,7 +130,7 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 		}
 	}
 	
-	public func pause(){
+	func pause(){
 		self.player?.pause();
 	}
 
@@ -167,14 +168,39 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 	}
 	
 	func switchToolBarVisibility(){
-		UIView.animateWithDuration(0.7, animations: {
-			if(self.toolbar.hidden){
-				self.toolbar.hidden = false;
-			}
-			else{
-				self.toolbar.hidden = true;
-			}
-		})
+		if(self.toolbar.hidden){
+			showToolBar()
+		}
+		else{
+			hideToolBar()
+		}
+	}
+	
+	func hideToolBar(delay : Double = 1){
+		UIView.animateWithDuration(1, delay: delay, options: UIViewAnimationOptions.CurveLinear, animations: {
+			self.toolbar.alpha = 0
+			}, completion: {c in self.toolbar.hidden = true});
+	}
+	
+	func delay(delay:Double, closure:()->()) {
+		dispatch_after(
+			dispatch_time(
+				DISPATCH_TIME_NOW,
+				Int64(delay * Double(NSEC_PER_SEC))
+			),
+			dispatch_get_main_queue(), closure)
+	}
+	
+	func showToolBar(){
+		UIView.animateWithDuration(1, delay: 0, options: UIViewAnimationOptions.CurveLinear, animations: {
+			self.toolbar.hidden = false;
+			self.toolbar.alpha = 1
+			}, completion: {c in
+//				self.delay(3.0){
+//					self.hideToolBar();
+//				}
+				});
+
 	}
 	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool {
 		return (touch.view is SPVideoPlayer);
