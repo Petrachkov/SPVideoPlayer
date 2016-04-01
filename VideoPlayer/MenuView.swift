@@ -16,12 +16,14 @@ class MenuView: UITableView {
 	
 	override init(frame: CGRect, style: UITableViewStyle) {
 		super.init(frame: frame, style: style);
-		
+		self.registerClass(PlayerItemCell.self, forCellReuseIdentifier: "PlayerCell");
 		let blureffect:UIBlurEffect = UIBlurEffect(style: UIBlurEffectStyle.Light)
 		self.blur = UIVisualEffectView (effect: blureffect)
-		self.blur.frame = self.bounds;
-		addSubview(self.blur)
-		self.backgroundColor = UIColor(red: 126.0/255.0, green: 126.0/255, blue: 126.0/255, alpha: 0.8);
+		self.blur.frame = CGRectMake(0, -100, self.bounds.width, self.bounds.height + 500);
+//		addSubview(self.blur)
+
+		self.backgroundColor = UIColor(red: 200/255.0, green: 200/255, blue: 200/255, alpha: 0.6);
+		self.backgroundView = self.blur;
 	}
 	
 	

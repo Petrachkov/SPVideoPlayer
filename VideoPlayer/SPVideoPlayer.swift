@@ -10,7 +10,7 @@ import UIKit
 import AVKit
 import MediaPlayer
 
-class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate {
+class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate, UITableViewDelegate {
 	//MARK: - UI Members -
 	/// ui members
 	var player : AVPlayer? = nil
@@ -38,7 +38,6 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 		playerItem = AVPlayerItem(asset: asset!)
 		player = AVPlayer(playerItem: playerItem!);
 		
-		
 		playerLayer = AVPlayerLayer(player: self.player)
 		var height = frame.height;
 		if (height <= 40){
@@ -61,11 +60,29 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 		var tapRecognizer = UITapGestureRecognizer(target: self, action: Selector("playerTapped:"));
 		tapRecognizer.delegate = self;
 		self.addGestureRecognizer(tapRecognizer);
+		
+		
+		self.playerItems.append(PlayerItemModel(title: "apple", url: NSURL(string: "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8")!));
+		self.playerItems.append(PlayerItemModel(title: "apple 1", url: NSURL(string: "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8")!));
+
+		self.dataSource = PlayerTableDataSource(items: playerItems);
+		self.menuView.dataSource = dataSource;
+		let headerView = UIView(frame: CGRectMake(0,0, self.menuView.bounds.width, 30));
+		let headerLabel = UILabel(frame: CGRectMake(10,0, self.menuView.bounds.width - 5, 30));
+		headerLabel.text = "Список разделов";
+		
+		headerView.addSubview(headerLabel);
+		self.menuView.tableHeaderView = headerView;
+		self.menuView.delegate = self;
 	}
+	
+	
 	
 	//MARK: - Functional members -
 	///
 	var toolBarDelegate : MediaToolBarDelegate!
+	var dataSource : PlayerTableDataSource!
+	var playerItems : [PlayerItemModel] = [PlayerItemModel]()
 	
 	internal func playTapped(toolBar: MediaToolBar) {
 		if(!toolBar.playing){
@@ -136,6 +153,7 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 
 	
 	//MARK: - UI logic-
+	//
 	var portraitFrame : CGRect!
 	override func layoutSubviews() {
 		if(UIDevice.currentDevice().orientation != .Portrait){
@@ -195,6 +213,7 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 		UIView.animateWithDuration(1, delay: 0, options: UIViewAnimationOptions.CurveLinear, animations: {
 			self.toolbar.hidden = false;
 			self.toolbar.alpha = 1
+			self.menuView.hideView()
 			}, completion: {c in
 //				self.delay(3.0){
 //					self.hideToolBar();
@@ -204,5 +223,20 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate 
 	}
 	func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool {
 		return (touch.view is SPVideoPlayer);
+	}
+	
+	//MARK: -TableViewDelegate-
+	//
+	
+	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+		print("a");
+		tableView.deselectRowAtIndexPath(indexPath, animated: true)
+		player?.pause();
+		asset = AVAsset(URL: self.playerItems[indexPath.row].url)
+		playerItem = AVPlayerItem(asset: asset!)
+		player = AVPlayer(playerItem: playerItem!);
+		playerLayer?.player = self.player;
+		player?.play();
+		self.menuView.switchState();
 	}
 }
