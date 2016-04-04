@@ -88,15 +88,7 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate,
 		if(!toolBar.playing){
 			if(!self.observerInitialized){
 				player?.addPeriodicTimeObserverForInterval(CMTimeMake(1,1), queue: nil, usingBlock: {time in
-					
-					// HERE IS WHAT YOU NEED TO ADJUST FOR VIDEOS. TODO: FIGURE OUT COMMON WAY
-//					if((self.player?.currentItem?.duration.seconds.isNaN) != nil){
-//						return;
-//					}
-					self.toolbar.fromStartLabel.text = self.stringFromTimeInterval((self.player?.currentTime().seconds)!) as String
-					self.toolbar.tilEndLabel.text = "-\(self.stringFromTimeInterval((self.player?.currentItem?.duration.seconds)! - (self.player?.currentTime().seconds)!) as String)"
-					self.toolbar.slider.maximumValue = Float((self.player?.currentItem?.duration.seconds)!);
-					self.toolbar.slider.setValue(Float(self.player!.currentTime().seconds), animated: true);
+					self.syncScrubber();
 				});
 				observerInitialized = true;
 			}
@@ -225,18 +217,49 @@ class SPVideoPlayer : UIView, MediaToolBarDelegate, UIGestureRecognizerDelegate,
 		return (touch.view is SPVideoPlayer);
 	}
 	
+	func syncScrubber(){
+		let seconds = Float((self.player?.currentItem?.duration.seconds)!);
+		if(!seconds.isNaN){
+			self.toolbar.slider.maximumValue = seconds;
+		}
+		else{
+			self.toolbar.fromStartLabel.text = ""
+			self.toolbar.tilEndLabel.text = ""
+			self.toolbar.slider.setValue(0, animated: true);
+			return;
+		}
+		
+		let duration = CGFloat(CMTimeGetSeconds((self.player?.currentItem?.duration)!)) ?? 0;
+		if(duration.isFinite){
+			let	time = CGFloat((self.player?.currentTime().seconds)!)
+			self.toolbar.slider.setValue(Float(time), animated: true);
+			
+			self.toolbar.fromStartLabel.text = self.stringFromTimeInterval((self.player?.currentTime().seconds)!) as String
+			self.toolbar.tilEndLabel.text = "-\(self.stringFromTimeInterval((self.player?.currentItem?.duration.seconds)! - (self.player?.currentTime().seconds)!) as String)"
+		}
+	}
+
+	
 	//MARK: -TableViewDelegate-
 	//
 	
 	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-		print("a");
 		tableView.deselectRowAtIndexPath(indexPath, animated: true)
-		player?.pause();
-		asset = AVAsset(URL: self.playerItems[indexPath.row].url)
-		playerItem = AVPlayerItem(asset: asset!)
-		player = AVPlayer(playerItem: playerItem!);
-		playerLayer?.player = self.player;
-		player?.play();
+		self.player?.pause();
+		self.asset = AVAsset(URL: self.playerItems[indexPath.row].url)
+		self.playerItem = AVPlayerItem(asset: asset!)
+		self.player?.replaceCurrentItemWithPlayerItem(self.playerItem);
+		self.playerLayer?.player = self.player;
+		self.player?.play();
+		
+		let seconds = Float((self.playerItem?.duration.seconds)!);
+		if(!seconds.isNaN){
+			self.toolbar.slider.maximumValue = seconds;
+		}
+		self.toolbar.slider.setValue(0, animated: true);
 		self.menuView.switchState();
 	}
+	
+	
+	
 }
