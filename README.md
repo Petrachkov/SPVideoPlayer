@@ -13,6 +13,8 @@ This code includes:
 
 P.S. I gave standard apple test videos, so try something else. This code is working with one of the projects i've taken part in, so it should be working.
 Feel free to contact me if you find any mistake or you have some thoughts about how to make it better. 
+
+
 P.P.S. I don't use storyboards because:
 
 required init?(coder aDecoder: NSCoder) {
