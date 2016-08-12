@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "min-3.png",
+      "filename" : "film-light.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "min-2.png",
+      "filename" : "film-light@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "min.png",
+      "filename" : "film-light@3x.png",
       "scale" : "3x"
     }
   ],
