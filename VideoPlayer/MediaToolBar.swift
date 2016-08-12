@@ -9,34 +9,48 @@
 import Foundation
 import UIKit
 
-
-class MediaToolBar : UIView{
-	var backColor : UIColor? = UIColor(red: 126.0/255.0, green: 126.0/255, blue: 126.0/255, alpha: 0.8);
+class CustomUISlider : UISlider
+{
+	override func trackRectForBounds(bounds: CGRect) -> CGRect {
+		let rect:CGRect = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.width, 3)
+		//set your bounds here
+		return rect
+		
+	}
+}
+class MediaToolBar : UIView, UIGestureRecognizerDelegate{
+	var backColor : UIColor? = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.25)
 	
 	var playButton : UIButton!;
+	var emptySpace: UIView!;
+	
+	
 	var expandButton : UIButton!;
 	var menuButton : UIButton!;
-	var slider : UISlider!;
+	var slider : CustomUISlider!;
 	
 	var delegate : MediaToolBarDelegate!;
 	var playing : Bool = false;
+	var fullScreen : Bool = false;
 	
 	var fromStartLabel : UILabel!;
 	var tilEndLabel : UILabel!;
 	
-	var blur : UIVisualEffectView!
+	//var blur : UIVisualEffectView!
 	override init(frame: CGRect) {
-		playButton = UIButton(type: .Custom);
-		playButton.setImage(UIImage(named: "play"), forState: .Normal);
 		
+		playButton = UIButton(type: .Custom);
+		playButton.setImage(UIImage(named: "play-white"), forState: .Normal);
+		
+		emptySpace = UIView();
 		
 		expandButton = UIButton(type: .Custom);
 		expandButton.setImage(UIImage(named:"resize"), forState: .Normal);
 		
 		menuButton = UIButton(type: .Custom);
-		menuButton.setImage(UIImage(named: "menu"), forState: .Normal);
+		menuButton.setImage(UIImage(named: "film-light"), forState: .Normal);
 		
-		slider = UISlider();
+		slider = CustomUISlider();
 		slider.setMaximumTrackImage(UIImage(named: "slider-max")?.resizableImageWithCapInsets(UIEdgeInsetsMake(0, 4, 0, 4)), forState: .Normal);
 		slider.setMinimumTrackImage(UIImage(named: "slider-min")?.resizableImageWithCapInsets(UIEdgeInsetsMake(0, 4, 0, 4)), forState: .Normal);
 		slider.setThumbImage(UIImage(named: "slider-thumb"), forState: .Normal);
@@ -56,25 +70,45 @@ class MediaToolBar : UIView{
 		
 		super.init(frame: frame);
 		
-		let blureffect:UIBlurEffect = UIBlurEffect(style: UIBlurEffectStyle.Light)
-		blur = UIVisualEffectView (effect: blureffect)
-		blur.frame = frame
-		addSubview(blur)
 		
 		self.backgroundColor = self.backColor;
+		
+		self.addSubview(emptySpace);
 		self.addSubview(playButton);
+		
 		self.addSubview(slider);
 		self.addSubview(expandButton);
 		self.addSubview(menuButton);
 		self.addSubview(fromStartLabel);
 		self.addSubview(tilEndLabel);
-		self.addSubview(self.menuButton);
 		playButton.addTarget(self, action: #selector(MediaToolBar.playTapped(_:)), forControlEvents: .TouchUpInside);
 		slider.addTarget(self, action: #selector(MediaToolBar.didDragged(_:)), forControlEvents: .TouchDragInside);
 		expandButton.addTarget(self, action: #selector(MediaToolBar.rotate(_:)), forControlEvents: .TouchUpInside);
 		menuButton.addTarget(self, action: #selector(MediaToolBar.menuTapped(_:)), forControlEvents: .TouchUpInside);
+		
+		let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(MediaToolBar.emptyTapped(_:)));
+		tapRecognizer.delegate = self;
+		self.emptySpace.addGestureRecognizer(tapRecognizer);
 	}
-
+	func switchSize(){
+		self.fullScreen = !self.fullScreen;
+		if(!self.fullScreen){
+			self.expandButton.setImage(UIImage(named:"resize"), forState: .Normal);
+		}
+		else{
+			self.expandButton.setImage(UIImage(named:"collapse"), forState: .Normal);
+		}
+	}
+	func emptyTapped(recognizer : UIGestureRecognizer){
+		self.delegate.emptySpaceTapped();
+	}
+	
+	func hideMe(delay : Double = 0.5)
+	{
+		UIView.animateWithDuration(0.5, delay: delay, options: UIViewAnimationOptions.CurveLinear, animations: {
+			self.alpha = 0
+			}, completion: {c in self.hidden = true});
+	}
 	
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
@@ -82,9 +116,29 @@ class MediaToolBar : UIView{
 	
 	func playTapped(button : UIButton){
 		delegate.playTapped(self);
+		self.switchPlayingState();
+	}
+	
+	func switchPlayingState(){
 		playing = !playing;
-		let img = playing ? UIImage(named:"pause") : UIImage(named: "play");
-		button.setImage(img, forState: .Normal);
+		let img = playing ? UIImage(named:"icon-pause") : UIImage(named: "play-white");
+		self.playButton.setImage(img, forState: .Normal);
+	}
+	
+	func setPortraitSizeState(portrait : Bool){
+		self.fullScreen = !portrait;
+		if(!self.fullScreen){
+			self.expandButton.setImage(UIImage(named:"resize"), forState: .Normal);
+		}
+		else{
+			self.expandButton.setImage(UIImage(named:"collapse"), forState: .Normal);
+		}
+	}
+	
+	func setPlaying (){
+		playing = true;
+		let img = UIImage(named:"icon-pause");
+		self.playButton.setImage(img, forState: .Normal);
 	}
 	
 	func didDragged(slider : UISlider) -> Void {
@@ -96,7 +150,6 @@ class MediaToolBar : UIView{
 			self.delegate.willRotateToOrientation(UIInterfaceOrientation.Portrait);
 			let value = UIInterfaceOrientation.Portrait.rawValue
 			UIDevice.currentDevice().setValue(value, forKey: "orientation")
-
 		}
 		else{
 			let value = UIInterfaceOrientation.LandscapeLeft.rawValue
@@ -108,32 +161,56 @@ class MediaToolBar : UIView{
 		self.delegate.menuTapped();
 	}
 	
+	func hideMenuButton()
+	{
+		self.menuButton.hidden = true;
+	}
+	
+	func showMenuButton()
+	{
+		self.menuButton.hidden = false;
+	}
+	
 	override func layoutSubviews() {
-		blur.frame = self.bounds
-		self.playButton.frame = CGRectMake(5, 0, 40, 40);
-		self.fromStartLabel.frame = CGRectMake(self.playButton.frame.maxX + 5, 0, 40, 40);
+		var barHeight: CGFloat = 40;
+		if (UIDevice.currentDevice().orientation.isLandscape)
+		{
+			barHeight = 60;
+		}
 		
-		self.tilEndLabel.frame = CGRectMake(self.slider.frame.maxX + 2, 0,
+		
+		
+		self.playButton.frame = CGRectMake((self.frame.size.width/2) - 20, ((self.frame.size.height)/2)-20, 40, 40);
+		self.emptySpace.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height-40);
+		
+		
+		self.fromStartLabel.frame = CGRectMake(15, (self.frame.size.height - barHeight)+(barHeight-40)/2, 40, 40);
+		self.tilEndLabel.frame = CGRectMake(self.slider.frame.maxX + 10, (self.frame.size.height - barHeight)+(barHeight-40)/2,
+		                                    50,
+		                                    40);
+		
+		
+		if(UIDevice.currentDevice().orientation.isLandscape){
+			
+			self.fromStartLabel.frame = CGRectMake(30, (self.frame.size.height - barHeight)+(barHeight-40)/2, 40, 40);
+			self.tilEndLabel.frame = CGRectMake(self.slider.frame.maxX + 25, (self.frame.size.height - barHeight)+(barHeight-40)/2,
 			                                    50,
 			                                    40);
-		
-		
-		if(UIDevice.currentDevice().orientation != .Portrait){
-			self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 80, 0, 40, 40);
-			self.menuButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 0, 40, 40);
-			self.slider.frame = CGRectMake(self.fromStartLabel.frame.maxX + 5,
-			                               0,
-			                               self.frame.width - self.playButton.frame.width - self.fromStartLabel.frame.width - 140,
+			
+			self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 50, (self.frame.size.height - barHeight)+(barHeight-40)/2, 40, 40);
+			self.menuButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 50, 8, 40, 40);
+			self.slider.frame = CGRectMake(self.fromStartLabel.frame.maxX + 30,
+			                               self.fromStartLabel.frame.center.y,
+			                               self.frame.width - self.fromStartLabel.frame.width - 195,
 			                               40);
 		}
 		else{
-			self.slider.frame = CGRectMake(self.fromStartLabel.frame.maxX + 5,
-			                               0,
-			                               self.frame.width - self.playButton.frame.width - self.fromStartLabel.frame.width - 120,
+			self.slider.frame = CGRectMake(self.fromStartLabel.frame.maxX + 15,
+			                               self.fromStartLabel.frame.center.y,
+			                               self.frame.width - self.fromStartLabel.frame.width - 140,
 			                               40);
-			self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 0, 40, 40);
+			self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, (self.frame.size.height - barHeight)+(barHeight-40)/2, 40, 40);
 		}
-		//self.expandButton.frame = CGRectMake(UIScreen.mainScreen().applicationFrame.width - 45, 0, 40, 40);
 		super.layoutSubviews();
 	}
 	

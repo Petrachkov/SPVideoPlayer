@@ -16,7 +16,10 @@ class ViewController: UIViewController {
 		super.viewDidLoad();
 		let videoURLWithPath =  "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8"
 		let videoURL = NSURL(string: videoURLWithPath)
-		self.playerView = SPVideoPlayer(frame: CGRectMake(0, 20, UIScreen.mainScreen().applicationFrame.width, 240), url: videoURL!);
+		self.playerView = SPVideoPlayer(frame: CGRectMake(0, 20, UIScreen.mainScreen().applicationFrame.width, 240),
+		                                videoItems: [PlayerItemModel(title: "title 1", url: videoURL!),
+													 PlayerItemModel(title: "title 2", url: videoURL!),
+													 PlayerItemModel(title: "title 3", url: videoURL!)]);
 		self.view.addSubview(playerView);
 		self.view.setNeedsLayout()
 	}
